@@ -20,42 +20,24 @@ class UpgradeError(Exception):
 
 """
 Copy this template and complete to add your macro
-
 class vnXX_txxx(MacroUpgrade):
     # Upgrade macro for <TICKET> by <Author>
-
     BEFORE_TAG = "vnX.X"
     AFTER_TAG = "vnX.X_txxx"
-
     def upgrade(self, config, meta_config=None):
         # Add settings
         return config, self.reports
 """
 
-class vn32_t797(MacroUpgrade):
-    # Upgrade macro for #797 by J. M. Edwards
+
+class vn32_t744(MacroUpgrade):
+    """Upgrade macro for ticket #744 by Maggie Hendry."""
 
     BEFORE_TAG = "vn3.2"
-    AFTER_TAG = "vn3.2_t797"
+    AFTER_TAG = "vn3.2_t744"
 
     def upgrade(self, config, meta_config=None):
-
-        # N.B. This upgrades to the version on the trunk of JULES, not to the
-        # version that has been used in developing GC6.
-        l_fix_neg_snow = (
-            self.get_setting_value(
-                config, ["namelist:jules_temp_fixes", "l_fix_neg_snow"], no_ignore=False
-            )
-        ) == ".true."
-        if l_fix_neg_snow:
-            self.add_setting(
-                config, ["namelist:jules_temp_fixes", "i_fix_neg_snow"], "2"
-            )
-        else:
-            self.add_setting(
-                config, ["namelist:jules_temp_fixes", "i_fix_neg_snow"], "0"
-            )
-        self.remove_setting(config, ["namelist:jules_temp_fixes", "l_fix_neg_snow"])
-
+        # Commands From: rose-meta/jules-lsm
+        # Bump tag to pick up metadata changes
 
         return config, self.reports
