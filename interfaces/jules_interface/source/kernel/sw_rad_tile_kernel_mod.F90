@@ -207,7 +207,7 @@ subroutine sw_rad_tile_code(nlayers, seg_len,                       &
   use jules_soil_biogeochem_mod, only: dim_ch4layer, soil_bgc_model,           &
                                        soil_model_ecosse, l_layeredc
   use jules_radiation_mod,       only: l_albedo_obs
-  use jules_snow_mod,            only: nsmax, cansnowtile
+  use jules_snow_mod,            only: nsmax, cansnowtile, l_rhofresh_extern
   use jules_deposition_mod,      only: l_deposition
   use jules_surface_mod,         only: l_urban2t, l_flake_model
   use jules_urban_mod,           only: l_moruses
@@ -377,7 +377,8 @@ subroutine sw_rad_tile_code(nlayers, seg_len,                       &
 
   call jules_vars_alloc(land_field,ntype,n_land_tile,rad_nband,nsoilt,        &
                    sm_levels, seg_len, 1, npft, bl_levels, pdims_s, pdims,    &
-                   l_albedo_obs, cansnowtile, l_deposition, jules_vars_data)
+                   l_albedo_obs, cansnowtile, l_deposition,                   &
+                   l_rhofresh_extern, jules_vars_data)
   call jules_vars_assoc(jules_vars,jules_vars_data)
 
   if ( can_rad_mod == 6 ) then

@@ -284,6 +284,7 @@ module um_physics_init_mod
 
   ! JULES modules used
   use c_rmol,               only : rmol
+  use jules_snow_mod,       only : l_rhofresh_extern
 
   ! UKCA modules used
   use ukca_api_mod,         only : ukca_constants_setup
@@ -1326,6 +1327,11 @@ contains
         casdiags % l_surface_graup = .true.
         casdiags % l_rainfall_3d = .true.
         casdiags % l_snowonly_3d = .true.
+        ! This needs generalization for cases where we want only the diagnostic.
+        if (l_rhofresh_extern) then
+          casdiags % l_surface_snowrho  = .true.
+          casdiags % l_surface_snowssa  = .true.
+        end if
 
         max_step_length = real(timestep_mp_in, r_um)
 

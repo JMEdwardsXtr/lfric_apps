@@ -75,6 +75,8 @@ module jules_physics_init_mod
                               cansnowpft_in => cansnowpft,                     &
                               n_lai_exposed_in => n_lai_exposed,               &
                               unload_rate_u_in => unload_rate_u,               &
+                              wind_compaction_sqrt_in => wind_compaction_sqrt, &
+                              l_rhofresh_extern_in => l_rhofresh_extern,       &
                               i_basal_melting_opt_in => i_basal_melting_opt,   &
                               i_basal_melting_opt_none,                        &
                               i_basal_melting_opt_instant,                     &
@@ -205,7 +207,8 @@ contains
          l_snow_infilt, l_snow_nocan_hc, l_snowdep_surf, lai_alb_lim_sn,    &
          n_lai_exposed, rho_snow_et_crit, rho_snow_fresh, snow_hcon,        &
          unload_rate_u, i_basal_melting_opt, i_grain_growth_opt,            &
-         i_relayer_opt, graupel_options
+         i_relayer_opt, graupel_options,                                    &
+         l_rhofresh_extern, wind_compaction_sqrt
     use jules_soil_mod, only: dzsoil_io, l_dpsids_dsdz, l_soil_sat_down,    &
          l_vg_soil, soilhc_method, check_jules_soil, confrac, cs_min, zsmc, &
          zst, sm_levels
@@ -408,6 +411,7 @@ contains
     end select
     i_snow_cond_parm       = 1
     l_et_metamorph         = .true.
+    l_rhofresh_extern      = l_rhofresh_extern_in
     l_snow_infilt          = .true.
     l_snow_nocan_hc        = .true.
     l_snowdep_surf         = .true.
@@ -417,6 +421,7 @@ contains
     rho_snow_fresh         = real(rho_snow_fresh_in, r_um)
     snow_hcon              = 0.1495_r_um
     unload_rate_u(1:npft)  = real(unload_rate_u_in, r_um)
+    wind_compaction_sqrt   = real(wind_compaction_sqrt_in, r_um)
 
     ! Set the LFRic dimension
     snow_lev_tile = nsmax * n_land_tile

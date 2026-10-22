@@ -32,11 +32,13 @@ module jules_extra_kernel_mod
   !>
   type, public, extends(kernel_type) :: jules_extra_kernel_type
     private
-    type(arg_type) :: meta_args(58) = (/                                       &
+    type(arg_type) :: meta_args(60) = (/                                       &
          arg_type(GH_FIELD, GH_REAL, GH_READ,      ANY_DISCONTINUOUS_SPACE_1), & ! ls_rain
          arg_type(GH_FIELD, GH_REAL, GH_READ,      ANY_DISCONTINUOUS_SPACE_1), & ! conv_rain
          arg_type(GH_FIELD, GH_REAL, GH_READ,      ANY_DISCONTINUOUS_SPACE_1), & ! ls_snow
          arg_type(GH_FIELD, GH_REAL, GH_READ,      ANY_DISCONTINUOUS_SPACE_1), & ! conv_snow
+         arg_type(GH_FIELD, GH_REAL, GH_READ,      ANY_DISCONTINUOUS_SPACE_1), & ! rho_fresh
+         arg_type(GH_FIELD, GH_REAL, GH_READ,      ANY_DISCONTINUOUS_SPACE_1), & ! ssa_fresh
          arg_type(GH_FIELD, GH_REAL, GH_READ,      ANY_DISCONTINUOUS_SPACE_1), & ! ls_graup
          arg_type(GH_FIELD, GH_REAL, GH_READ,      ANY_DISCONTINUOUS_SPACE_1), & ! lsca_2d
          arg_type(GH_FIELD, GH_REAL, GH_READ,      ANY_DISCONTINUOUS_SPACE_1), & ! cca_2d
@@ -112,6 +114,8 @@ contains
   !> @param[in]     conv_rain              Convective rainfall rate (kg m-2 s-1)
   !> @param[in]     ls_snow                Large-scale snowfall rate (kg m-2 s-1)
   !> @param[in]     conv_snow              Convective snowfall rate (kg m-2 s-1)
+  !> @param[in]     surfacerho_s           Density of fresh snow (kg m-3)
+  !> @param[in]     surfacessa_s           SSA of fresh snow (m2 kg-1)
   !> @param[in]     ls_graup               Large-scale graupelfall rate (kg m-2 s-1)
   !> @param[in]     lsca_2d                Large-scale cloud amout (2d)
   !> @param[in]     cca_2d                 Convective cloud amout (2d) with no anvil
@@ -187,6 +191,8 @@ contains
                conv_rain,                  &
                ls_snow,                    &
                conv_snow,                  &
+               surfacerho_s,               &
+               surfacessa_s,               &
                ls_graup,                   &
                lsca_2d,                    &
                cca_2d,                     &
@@ -272,11 +278,12 @@ contains
     use dust_parameters_mod,      only: ndiv
     use jules_hydrology_mod,      only: l_hydrology
     use jules_surface_types_mod,  only: npft, ntype
+    ! Eventually remove this duplicate.
     use jules_snow_mod,           only: nsmax
     use jules_soil_mod,           only: ns_deep, l_bedrock
     use jules_soil_biogeochem_mod, only: dim_ch4layer, soil_bgc_model,         &
                                          soil_model_ecosse, l_layeredc
-    use jules_snow_mod,           only: nsmax, cansnowtile
+    use jules_snow_mod,           only: nsmax, cansnowtile, l_rhofresh_extern
     use jules_deposition_mod,     only: l_deposition
     use jules_sea_seaice_mod,     only: nice, nice_use
     use jules_deposition_mod,     only: l_deposition
@@ -389,6 +396,8 @@ contains
 
     real(kind=r_def), dimension(undf_2d), intent(in) :: ls_rain, conv_rain,   &
                                                         ls_snow, conv_snow,   &
+                                                        surfacerho_s,         &
+                                                        surfacessa_s,         &
                                                         ls_graup, lsca_2d,    &
                                                         cca_2d
 
@@ -605,7 +614,7 @@ contains
 
     call jules_vars_alloc(land_pts,ntype,nsurft,rad_nband,nsoilt,sm_levels,   &
                 t_i_length, t_j_length, npft, bl_levels, pdims_s, pdims,      &
-                l_albedo_obs, cansnowtile, l_deposition,                      &
+                l_albedo_obs, cansnowtile, l_deposition, l_rhofresh_extern,   &
                 jules_vars_data)
     call jules_vars_assoc(jules_vars,jules_vars_data)
 
@@ -696,6 +705,10 @@ contains
       forcing%con_rain_ij(i,1) = conv_rain(map_2d(1,i)) ! Convective rainfall rate
       forcing%ls_snow_ij(i,1) = ls_snow(map_2d(1,i))   ! Large-scale snowfall rate
       forcing%con_snow_ij(i,1) = conv_snow(map_2d(1,i)) ! Convective snowfallfall rate
+      if (l_rhofresh_extern) then
+        forcing%rhofresh_ij(i,1) = surfacerho_s(map_2d(1,i)) ! Density of fresh snow
+        forcing%ssafresh_ij(i,1) = surfacessa_s(map_2d(1,i)) ! Density of fresh snow
+      endif
       cca_2d_ij(i,1)   = cca_2d(map_2d(1,i))    ! Convective cloud amount
       ls_graup_ij(i,1) = ls_graup(map_2d(1,i)) ! Large-scale graupelfall rate
     end do

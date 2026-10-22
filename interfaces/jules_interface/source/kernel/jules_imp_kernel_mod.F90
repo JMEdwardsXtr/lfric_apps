@@ -357,7 +357,8 @@ contains
     use jules_deposition_mod, only: l_deposition
     use jules_irrig_mod, only: irr_crop, irr_crop_doell
     use jules_sea_seaice_mod, only: nice, nice_use, emis_sea, l_sice_swpen
-    use jules_snow_mod, only: cansnowtile, rho_snow_const, l_snowdep_surf,nsmax
+    use jules_snow_mod, only: cansnowtile, rho_snow_const, l_snowdep_surf,    &
+                              nsmax, l_rhofresh_extern
     use jules_surface_types_mod, only: npft, ntype, lake, nnvg, ncpft, nnpft, &
                                        soil
     use jules_surface_mod, only: l_flake_model
@@ -661,7 +662,7 @@ contains
 
     call jules_vars_alloc(land_field,ntype,nsurft,rad_nband,nsoilt,sm_levels, &
                 t_i_length, t_j_length, npft, bl_levels, pdims_s, pdims,      &
-                l_albedo_obs, cansnowtile, l_deposition,                      &
+                l_albedo_obs, cansnowtile, l_deposition, l_rhofresh_extern,   &
                 jules_vars_data)
     call jules_vars_assoc(jules_vars,jules_vars_data)
 

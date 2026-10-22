@@ -96,6 +96,9 @@ contains
     type( field_type ), pointer :: ls_graup            => null()
     type( field_type ), pointer :: lsca_2d             => null()
 
+    type( field_type ), pointer :: surfacerho_s        => null()
+    type( field_type ), pointer :: surfacessa_s        => null()
+
     type( field_type ), pointer :: ls_rain_3d          => null()
     type( field_type ), pointer :: ls_snow_3d          => null()
 
@@ -120,6 +123,9 @@ contains
     type( field_type ) :: superc_liq
     type( field_type ) :: superc_rain
     type( field_type ) :: ls_graup_3d
+
+    type( field_type ) :: surfsnowrho
+    type( field_type ) :: surfsnowssa
 
     integer(kind=i_def) :: mesh_id, ncells
 
@@ -153,6 +159,9 @@ contains
 
     call microphysics_fields%get_field('lsca_2d', lsca_2d)
 
+    call microphysics_fields%get_field('surfacerho_s', surfacerho_s)
+    call microphysics_fields%get_field('surfacessa_s', surfacessa_s)
+
     call microphysics_fields%get_field('ls_rain_3d', ls_rain_3d)
     call microphysics_fields%get_field('ls_snow_3d', ls_snow_3d)
 
@@ -171,7 +180,8 @@ contains
     height_wth => get_height_fv(Wtheta, mesh_id)
 
     call initialise_diags_for_casim( refl_tot, refl_1km, superc_liq,           &
-                                     superc_rain, ls_graup_3d )
+                                     superc_rain, ls_graup_3d,                 &
+                                     surfsnowrho, surfsnowssa )
 
     call invoke(name = "invoke_casim_kernel_type",                             &
                  casim_kernel_type ( mr_n(imr_v), mr_n(imr_cl), mr_n(imr_ci),  &
@@ -187,6 +197,8 @@ contains
                                      dmr_mphys(imr_ci), dmr_mphys(imr_r),      &
                                      dmr_mphys(imr_g), dmr_mphys(imr_s),       &
                                      ls_rain, ls_snow, ls_graup, lsca_2d,      &
+                                     surfacerho_s, surfacessa_s,               &
+                                     surfsnowrho, surfsnowssa,                 &
                                      ls_rain_3d, ls_snow_3d, ls_graup_3d,      &
                                      theta_inc, cloud_drop_no_conc, murk,      &
                                      refl_tot, refl_1km,                       &
@@ -224,6 +236,8 @@ contains
 
         call output_diags_for_casim(ls_rain, ls_snow, ls_graup,               &
                                     lsca_2d, refl_tot, refl_1km,              &
+                                    surfacerho_s, surfacessa_s,               &
+                                    surfsnowrho, surfsnowssa,                 &
                                     ls_rain_3d, ls_snow_3d, ls_graup_3d,      &
                                     nl_mphys, nr_mphys, ni_mphys, ns_mphys,   &
                                     ng_mphys, exner_in_wth, theta_inc,        &

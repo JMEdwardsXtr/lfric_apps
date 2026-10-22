@@ -54,6 +54,8 @@ contains
     type( field_type ), pointer :: tnuc         => null()
     type( field_type ), pointer :: tnuc_nlcl    => null()
     type( field_type ), pointer :: precfrac
+    type( field_type ), pointer :: surfacerho_s => null()
+    type( field_type ), pointer :: surfacessa_s => null()
 
     call microphysics_fields%get_field('dtheta_mphys', dtheta_mphys)
     call microphysics_fields%get_field('dmv_mphys', dmv_mphys)
@@ -85,7 +87,7 @@ contains
                  setval_c(rim_cry,      0.0_r_def), &
                  setval_c(rim_agg,      0.0_r_def), &
                  setval_c(tnuc,         0.0_r_def), &
-                 setval_c(tnuc_nlcl,    0.0_r_def))
+                 setval_c(tnuc_nlcl,    0.0_r_def) )
 
     ! Initialise Casim numbers
     if (microphysics_casim) then
@@ -96,6 +98,9 @@ contains
       call microphysics_fields%get_field('ns_mphys', n_s)
       call microphysics_fields%get_field('ng_mphys', n_g)
 
+      call microphysics_fields%get_field('surfacerho_s', surfacerho_s)
+      call microphysics_fields%get_field('surfacessa_s', surfacessa_s)
+
       ! Initialise rain, snow and graupel numbers to nonzero values
       ! This ~10/litre (1e4) number concentration is a pragmatic choice
       ! until number concentration prognostics are fed in from a Casim
@@ -105,7 +110,9 @@ contains
                   setval_c(n_r,  1.0e4_r_def), &
                   setval_c(n_ci, 0.0_r_def),   &
                   setval_c(n_s,  1.0e4_r_def), &
-                  setval_c(n_g,  1.0e4_r_def) )
+                  setval_c(n_g,  1.0e4_r_def), &
+                  setval_c(surfacerho_s,  1.0e2_r_def), &
+                  setval_c(surfacerho_s,  6.5e1_r_def) )
     end if
 
     ! Initialise precipitation fraction to nonzero value - it will be set

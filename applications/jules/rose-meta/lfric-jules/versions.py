@@ -490,3 +490,16 @@ class vn22_t618(MacroUpgrade):
         )
 
         return config, self.reports
+
+
+class vn22_t619(MacroUpgrade):
+    # Upgrade macro for ticket 619 by J. M. Edwards.
+
+    BEFORE_TAG = "vn2.2"
+    AFTER_TAG = "vn2.2_t619"
+
+    def upgrade(self, config, meta_config=None):
+        self.add_setting(config, ["namelist:jules_snow", "l_rhofresh_extern"], ".false.")
+        self.add_setting(config, ["namelist:jules_snow", "wind_compaction_sqrt"], "0.0")
+        return config, self.reports
+

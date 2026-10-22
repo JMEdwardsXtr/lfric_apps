@@ -23,10 +23,10 @@
 
 export lfric_core_rev=54094
 export lfric_core_sources=
-export casim_rev=apps2.2
-export casim_sources=
-export jules_rev=31238
-export jules_sources=
+export casim_rev=
+export casim_sources=fcm:casim.xm_br/dev/johnmedwards/um13.9_microphys_cpl_casim
+export jules_rev=
+export jules_sources=fcm:jules.xm_br/dev/johnmedwards/vn7.9_microphys_cpl_jules
 export socrates_rev=1869
 export socrates_sources=
 export ukca_rev=7497

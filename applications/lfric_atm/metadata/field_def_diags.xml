@@ -448,6 +448,11 @@
   <field id="casim__ng_mphys" name="ng_mphys" long_name="number_concentration_of_graupel_after_microphysics" unit="kg-1" grid_ref="full_level_face_grid" />
   <field id="casim__nl_mphys_act" name="nl_mphys_act" long_name="number_concentration_of_cloud_droplets_after_activation" unit="kg-1" grid_ref="full_level_face_grid" />
   <field id="casim__ni_mphys_act" name="ni_mphys_act" long_name="number_concentration_of_cloud_ice_after_activation" unit="kg-1" grid_ref="full_level_face_grid" />
+  <field id="casim__surfsnowrho" name="surfsnowrho" long_name="Surface_Snow_Density" unit="kgm-3" domain_ref="face" />
+  <field id="casim__surfsnowssa" name="surfsnowssa" long_name="Surface_Snow_SSA" unit="m2kg-1" domain_ref="face" />
+  <!-- These fields may be redundant, but I'm not yet sure exactly what we need -->
+  <field id="microphysics__surfacerho_s" name="surfacerho_s" long_name="Surface_Snow_Rho" unit="kg m-3" domain_ref="face" />
+  <field id="microphysics__surfacessa_s" name="surfacessa_s" long_name="Surface_Snow_SpArea" unit="m2 kg-1" domain_ref="face" />
   <!-- Electric (lightning) diagnostics -->
   <field id="electric__flash_potential" name="flash_potential" long_name="lightning_flash_potential" unit="1" domain_ref="face" />
   <field id="electric__gwp" name="gwp" long_name="graupel_water_path" unit="kg m-2" domain_ref="face" />
@@ -498,7 +503,7 @@
   <field id="zoomed__sea_tile" field_ref="surface__tile_fraction" domain_ref="face" axis_ref="surface_tiles_sea_zoom" />
   <field id="surface__sea_ice_tile" domain_ref="face"> zoomed__sea_ice_tile </field>
   <field id="surface__sea_tile" domain_ref="face"> zoomed__sea_tile </field>
-  <field id="surface__sea_ice_fraction" name="sea_ice_fraction" long_name="sea_ice_area_fraction" standard_name="sea_ice_area_fraction" unit="1" domain_ref="face"> surface__sea_ice_tile / (surface__sea_ice_tile + surface__sea_tile + 1.0e-16) </field>
+  <field id="surface__sea_ice_area_fraction" name="sea_ice_area_fraction" long_name="sea_ice_area_fraction" standard_name="sea_ice_area_fraction" unit="1" domain_ref="face"> surface__sea_ice_tile / (surface__sea_ice_tile + surface__sea_tile + 1.0e-16) </field>
   <field id="zoomed__urban_tile" field_ref="surface__tile_fraction" domain_ref="face" axis_ref="surface_tiles_urban_zoom"/>
   <field id="surface__urban_tile" name="urban_tile_fraction" long_name="urban_tile_fraction" domain_ref="face"> zoomed__urban_tile </field>
   <field id="zoomed__land_ice_tile" field_ref="surface__tile_fraction" domain_ref="face" axis_ref="surface_tiles_land_ice_zoom"/>
@@ -612,12 +617,12 @@
   <field id="zoomed__snowpack_density_C3grass" field_ref="snow__snowpack_density" axis_ref="surface_tiles_C3grass_zoom"/>
   <field id="snow__snowpack_density_C3grass" name="snowpack_density_C3grass" long_name="snowpack_density_C3grass" domain_ref="face"> zoomed__snowpack_density_C3grass </field>
   <!-- Jules sea ice diagnostics -->
-  <field id="seaice__sea_ice_fraction" name="sea_ice_fraction" long_name="sea_ice_fraction" unit="1" domain_ref="face" axis_ref="sea_ice_categories" />
+  <field id="seaice__sea_ice_area_fraction" name="sea_ice_area_fraction" long_name="sea_ice_area_fraction" unit="1" domain_ref="face" axis_ref="sea_ice_categories" />
   <field id="seaice__sea_ice_thickness" name="sea_ice_thickness" long_name="sea_ice_thickness" unit="m" domain_ref="face" axis_ref="sea_ice_categories" />
   <field id="seaice__sea_ice_temperature" name="sea_ice_temperature" long_name="sea_ice_temperature" unit="K" domain_ref="face" axis_ref="sea_ice_categories" />
   <field id="seaice__sea_ice_conductivity" name="sea_ice_conductivity" long_name="sea_ice_conductivity" unit="W m-2 K-1" domain_ref="face" axis_ref="sea_ice_categories" />
   <field id="seaice__sea_ice_pensolar" name="sea_ice_pensolar" long_name="sea_ice_pensolar_per_ice_surface" unit="W m-2" domain_ref="face" axis_ref="sea_ice_categories" />
-  <field id="processed__sea_ice_pensolar" name="sea_ice_pensolar_gbm" long_name="sea_ice_pensolar_grid_box_mean" unit="W m-2" domain_ref="face" axis_ref="sea_ice_categories">seaice__sea_ice_pensolar * seaice__sea_ice_fraction</field>
+  <field id="processed__sea_ice_pensolar" name="sea_ice_pensolar_gbm" long_name="sea_ice_pensolar_grid_box_mean" unit="W m-2" domain_ref="face" axis_ref="sea_ice_categories">seaice__sea_ice_pensolar * seaice__sea_ice_area_fraction</field>
   <field id="seaice__melt_pond_fraction" name="melt_pond_fraction" long_name="sea ice melt pond fraction" unit="1" domain_ref="face" axis_ref="sea_ice_categories" />
   <field id="seaice__melt_pond_depth" name="melt_pond_depth" long_name="sea ice melt pond depth" unit="m" domain_ref="face" axis_ref="sea_ice_categories" />
   <!-- Jules soil diagnostics -->

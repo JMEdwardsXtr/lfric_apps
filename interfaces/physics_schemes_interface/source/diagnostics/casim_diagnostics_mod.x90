@@ -23,6 +23,8 @@ module casim_diagnostics_mod
   !-----------------------------
   logical( l_def ) :: dt_mphys_flag
   logical( l_def ) :: refl_tot_flag
+  logical( l_def ) :: surfacerho_flag
+  logical( l_def ) :: surfacessa_flag
   logical( l_def ) :: superc_liq_flag
   logical( l_def ) :: superc_rain_flag
   logical( l_def ) :: ls_graup_3d_flag
@@ -34,7 +36,7 @@ module casim_diagnostics_mod
   logical( l_def ) :: refl_1km_flag
 
   public :: output_diags_for_casim, initialise_diags_for_casim
-  public :: ls_graup_3d_flag
+  public :: ls_graup_3d_flag, surfacerho_flag, surfacessa_flag
 
 contains
 
@@ -44,8 +46,11 @@ contains
   !> @param[inout] superc_liq  Supercooled liquid cloud mixing ratio
   !> @param[inout] superc_rain Supercooled rain mixing ratio
   !> @param[inout] ls_graup_3d Graupelfall rate (3-dimensional)
+  !> @param[inout] surfsnowrho Surface snow density
+  !> @param[inout] surfsnowssa Surface snow SSA
   subroutine initialise_diags_for_casim(refl_tot, refl_1km, superc_liq,        &
-                                        superc_rain, ls_graup_3d )
+                                        superc_rain, ls_graup_3d,              &
+                                        surfsnowrho, surfsnowssa)
 
     implicit none
 
@@ -54,6 +59,8 @@ contains
     type( field_type ), intent(inout) :: superc_liq
     type( field_type ), intent(inout) :: superc_rain
     type( field_type ), intent(inout) :: ls_graup_3d
+    type( field_type ), intent(inout) :: surfsnowrho
+    type( field_type ), intent(inout) :: surfsnowssa
 
     if ( subroutine_timers ) call timer("casim_diagnostics")
 
@@ -62,6 +69,8 @@ contains
     superc_liq_flag = init_diag(superc_liq, 'microphysics__superc_liq')
     superc_rain_flag = init_diag(superc_rain, 'microphysics__superc_rain')
     ls_graup_3d_flag = init_diag(ls_graup_3d, 'microphysics__ls_graup_3d')
+    surfacerho_flag  = init_diag(surfsnowrho, 'casim__surfsnowrho')
+    surfacessa_flag  = init_diag(surfsnowssa, 'casim__surfsnowssa')
 
     if ( subroutine_timers ) call timer("casim_diagnostics")
 
@@ -76,6 +85,8 @@ contains
 
   subroutine output_diags_for_casim(ls_rain, ls_snow, ls_graup,                &
                                     lsca_2d, refl_tot, refl_1km,               &
+                                    surfacerho_s, surfacessa_s,                &
+                                    surfsnowrho, surfsnowssa,                  &
                                     ls_rain_3d, ls_snow_3d, ls_graup_3d,       &
                                     nl_mphys, nr_mphys, ni_mphys, ns_mphys,    &
                                     ng_mphys, exner_in_wth, theta_inc,         &
@@ -87,6 +98,8 @@ contains
 
     type ( field_type ), intent(in) :: ls_rain, ls_snow, ls_graup,             &
                                        lsca_2d, refl_tot, refl_1km,            &
+                                       surfacerho_s, surfacessa_s,             &
+                                       surfsnowrho, surfsnowssa,               &
                                        ls_rain_3d, ls_snow_3d, ls_graup_3d,    &
                                        nl_mphys, nr_mphys, ni_mphys, ns_mphys, &
                                        ng_mphys, exner_in_wth, theta_inc,      &
@@ -129,6 +142,14 @@ contains
     ! Other 2D fields
     !-----------------------------------------------------
     call lsca_2d%write_field('microphysics__lsca_2d')
+    call surfacerho_s%write_field('microphysics__surfacerho_s')
+    if (surfacerho_flag) then
+      call surfsnowrho%write_field('casim__surfsnowrho')
+    end if
+    call surfacessa_s%write_field('microphysics__surfacessa_s')
+    if (surfacessa_flag) then
+      call surfsnowssa%write_field('casim__surfsnowssa')
+    end if
 
     !-----------------------------------------------------
     ! Output change in theta and change in temperature

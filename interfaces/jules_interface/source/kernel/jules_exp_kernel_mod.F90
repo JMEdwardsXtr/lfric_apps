@@ -461,7 +461,7 @@ contains
     use jules_deposition_mod, only: l_deposition
     use jules_irrig_mod, only: irr_crop, irr_crop_doell
     use jules_sea_seaice_mod, only: nice_use, l_ctile, l_sice_swpen
-    use jules_snow_mod, only: nsmax, cansnowtile
+    use jules_snow_mod, only: nsmax, cansnowtile, l_rhofresh_extern
     use jules_soil_mod, only: ns_deep, l_bedrock
     use jules_soil_biogeochem_mod, only: dim_ch4layer, soil_bgc_model,         &
                                          soil_model_ecosse, l_layeredc
@@ -944,8 +944,8 @@ contains
 
     call jules_vars_alloc(land_field,ntype,n_land_tile,rad_nband,nsoilt,       &
                           sm_levels, seg_len, 1, npft, bl_levels, pdims_s,     &
-                          pdims, l_albedo_obs, cansnowtile, l_deposition,        &
-                          jules_vars_data)
+                          pdims, l_albedo_obs, cansnowtile, l_deposition,      &
+                          l_rhofresh_extern, jules_vars_data)
     call jules_vars_assoc(jules_vars,jules_vars_data)
 
     if (can_rad_mod == 6) then

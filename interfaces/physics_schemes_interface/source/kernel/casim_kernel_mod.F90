@@ -33,7 +33,7 @@ private
 
 type, public, extends(kernel_type) :: casim_kernel_type
   private
-  type(arg_type) :: meta_args(40) = (/                                      &
+  type(arg_type) :: meta_args(44) = (/                                      &
        arg_type(GH_FIELD, GH_REAL, GH_READ,  WTHETA),                       & ! mv_wth
        arg_type(GH_FIELD, GH_REAL, GH_READ,  WTHETA),                       & ! ml_wth
        arg_type(GH_FIELD, GH_REAL, GH_READ,  WTHETA),                       & ! mi_wth
@@ -64,6 +64,10 @@ type, public, extends(kernel_type) :: casim_kernel_type
        arg_type(GH_FIELD, GH_REAL, GH_WRITE, ANY_DISCONTINUOUS_SPACE_1),    & ! ls_snow_2d
        arg_type(GH_FIELD, GH_REAL, GH_WRITE, ANY_DISCONTINUOUS_SPACE_1),    & ! ls_graup_2d
        arg_type(GH_FIELD, GH_REAL, GH_WRITE, ANY_DISCONTINUOUS_SPACE_1),    & ! lsca_2d
+       arg_type(GH_FIELD, GH_REAL, GH_WRITE, ANY_DISCONTINUOUS_SPACE_1),    & ! surfacerho_s
+       arg_type(GH_FIELD, GH_REAL, GH_WRITE, ANY_DISCONTINUOUS_SPACE_1),    & ! surfacessa_s
+       arg_type(GH_FIELD, GH_REAL, GH_WRITE, ANY_DISCONTINUOUS_SPACE_1),    & ! surfsnowrho
+       arg_type(GH_FIELD, GH_REAL, GH_WRITE, ANY_DISCONTINUOUS_SPACE_1),    & ! surfsnowssa
        arg_type(GH_FIELD, GH_REAL, GH_WRITE, WTHETA),                       & ! ls_rain_3d
        arg_type(GH_FIELD, GH_REAL, GH_WRITE, WTHETA),                       & ! ls_snow_3d
        arg_type(GH_FIELD, GH_REAL, GH_WRITE, WTHETA),                       & ! ls_graup_3d
@@ -123,6 +127,10 @@ contains
 !> @param[in,out] ls_snow_2d          Large scale snow from twod_fields
 !> @param[in,out] ls_graup_2d         Large scale graupel from twod_fields
 !> @param[in,out] lsca_2d             Large scale cloud amount (2d)
+!> @param[in,out] surfacerho_s        Surface snow density (2d)
+!> @param[in,out] surfacessa_s        Surface SSA (2d)
+!> @param[in,out] surfsnowrho         Diagnostic copy of surface snow density (2d)
+!> @param[in,out] surfsnowssa         Diagnostic copy of surface SSA (2d)
 !> @param[in,out] ls_rain_3d          Large scale rain on model layers
 !> @param[in,out] ls_snow_3d          Large scale snow on model layers
 !> @param[in,out] ls_graup_3d         Large scale graupel on model layers
@@ -168,6 +176,8 @@ subroutine casim_code( nlayers,                     &
                        dmr_wth,  dmg_wth,  dms_wth, &
                        ls_rain_2d, ls_snow_2d,      &
                        ls_graup_2d, lsca_2d,        &
+                       surfacerho_s, surfacessa_s,  &
+                       surfsnowrho, surfsnowssa,    &
                        ls_rain_3d, ls_snow_3d,      &
                        ls_graup_3d,                 &
                        theta_inc,                   &
@@ -179,7 +189,9 @@ subroutine casim_code( nlayers,                     &
                        ndf_2d,  undf_2d,  map_2d    )
 
     use constants_mod,              only: r_def, i_def, r_um, i_um
-    use casim_diagnostics_mod,      only: ls_graup_3d_flag
+    use casim_diagnostics_mod,      only: ls_graup_3d_flag,  &
+                                          surfacerho_flag,   &
+                                          surfacessa_flag
 
     !---------------------------------------
     ! UM modules
@@ -199,6 +211,7 @@ subroutine casim_code( nlayers,                     &
                                     only: allocate_diagnostic_space,   &
                                           deallocate_diagnostic_space, &
                                           casdiags
+    use jules_snow_mod,             only: l_rhofresh_extern
     use number_droplet_mod,         only: min_cdnc_sea_ice
     use mphys_air_density_mod,      only: mphys_air_density
     use mphys_radar_mod,            only: ref_lim
@@ -243,6 +256,8 @@ subroutine casim_code( nlayers,                     &
     real(kind=r_def), intent(inout), dimension(undf_2d)  :: ls_snow_2d
     real(kind=r_def), intent(inout), dimension(undf_2d)  :: ls_graup_2d
     real(kind=r_def), intent(inout), dimension(undf_2d)  :: lsca_2d
+    real(kind=r_def), intent(inout), dimension(undf_2d)  :: surfacerho_s
+    real(kind=r_def), intent(inout), dimension(undf_2d)  :: surfacessa_s
     real(kind=r_def), intent(inout), dimension(undf_wth) :: theta_inc
     real(kind=r_def), intent(inout), dimension(undf_wth) :: cloud_drop_no_conc
     real(kind=r_def), intent(inout), dimension(undf_wth) :: murk
@@ -256,6 +271,9 @@ subroutine casim_code( nlayers,                     &
     real(kind=r_def), pointer, intent(inout) :: superc_liq(:)
     real(kind=r_def), pointer, intent(inout) :: superc_rain(:)
     real(kind=r_def), pointer, intent(inout) :: ls_graup_3d(:)
+
+    real(kind=r_def), pointer, intent(inout) :: surfsnowrho(:)
+    real(kind=r_def), pointer, intent(inout) :: surfsnowssa(:)
 
     integer(kind=i_def), intent(in), dimension(ndf_wth) :: map_wth
     integer(kind=i_def), intent(in), dimension(ndf_w3)  :: map_w3
@@ -345,6 +363,17 @@ subroutine casim_code( nlayers,                     &
       end do
     end if
 
+    !-----------------------------------------------------------------------
+    ! Initialisation of diagnostic variables used prognostically in JULES.
+    !-----------------------------------------------------------------------
+    ! To be worked out: surfacesnowrho is not defined. Removing the
+    ! assocition allows compilation.
+    if (l_rhofresh_extern .or. .not. associated(surfsnowrho, empty_real_data)) then
+      casdiags % l_surface_snowrho = .true.
+    end if
+    if (l_rhofresh_extern .or. .not. associated(surfsnowssa, empty_real_data)) then
+      casdiags % l_surface_snowssa = .true.
+    end if
     !-----------------------------------------------------------------------
     ! Initialisation of non-prognostic variables and arrays
     !-----------------------------------------------------------------------
@@ -495,7 +524,7 @@ subroutine casim_code( nlayers,                     &
                             accum_sol_bk,                                     &
                             coarse_sol_bk, pii_casim, p_casim,                &
                             rho_casim, w_casim, tke_casim,                    &
-                            dz_casim,                                         &
+                            dz_casim, l_rhofresh_extern,                      &
                             cfliq_casim, cfice_casim, cfsnow_casim,           &
                             cfrain_casim, cfgr_casim,                         &
     !!                input variables above  || in/out variables below
@@ -563,6 +592,22 @@ subroutine casim_code( nlayers,                     &
     ls_rain_2d(map_2d(1))  = casdiags % SurfaceRainR(1,1)
     ls_snow_2d(map_2d(1))  = casdiags % SurfaceSnowR(1,1)
     ls_graup_2d(map_2d(1)) = casdiags % SurfaceGraupR(1,1)
+
+    !------------------------------------------------------------------------------
+    ! Copy prognostic surface fields from CASIM to standard variables
+    !------------------------------------------------------------------------------
+    ! This is required only when the variables are used, not if they are
+    ! just diagnostic, so the test is based only on l_rhofresh_extern.
+    if (l_rhofresh_extern) then
+      surfacerho_s(map_2d(1))  = casdiags % SurfaceSnowRho(1,1)
+      surfacessa_s(map_2d(1))  = casdiags % SurfaceSnowSSA(1,1)
+    end if
+    if (surfacerho_flag) then
+      surfsnowrho(map_2d(1))  = casdiags % SurfaceSnowRho(1,1)
+    end if
+    if (surfacessa_flag) then
+      surfsnowssa(map_2d(1))  = casdiags % SurfaceSnowSSA(1,1)
+    end if
 
     ! Copy 3D precipitation rate quantities
     do k = 1, nlayers

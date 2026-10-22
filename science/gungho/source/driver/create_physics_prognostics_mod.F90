@@ -72,6 +72,7 @@ module create_physics_prognostics_mod
   use jules_surface_config_mod,       only : srf_ex_cnv_gust, l_vary_z0m_soil, &
                                              l_urban2t
   use jules_radiation_config_mod,     only : l_albedo_obs, l_sea_alb_var_chl
+  use jules_snow_mod,                 only : l_rhofresh_extern
   use specified_surface_config_mod,   only : surf_temp_forcing, &
                                              surf_temp_forcing_int_flux
   use spectral_gwd_config_mod,        only : add_cgw
@@ -503,6 +504,10 @@ contains
     ! 2D fields, don't need checkpointing
     call processor%apply(make_spec('ls_rain', main%microphysics, W3, twod=.true.))
     call processor%apply(make_spec('ls_snow', main%microphysics, W3, twod=.true.))
+    if (l_rhofresh_extern) then
+      call processor%apply(make_spec('surfacerho_s', main%microphysics, W3, twod=.true.))
+      call processor%apply(make_spec('surfacessa_s', main%microphysics, W3, twod=.true.))
+    end if
     call processor%apply(make_spec('lsca_2d', main%microphysics, W3, twod=.true.))
 
     call processor%apply(make_spec('ls_graup', main%microphysics, W3, twod=.true.))
