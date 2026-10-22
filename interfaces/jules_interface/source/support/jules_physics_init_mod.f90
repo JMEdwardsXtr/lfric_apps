@@ -24,7 +24,6 @@ module jules_physics_init_mod
                               i_high_wind_drag_reduced_v1,                     &
                               buddy_sea_on
   use jules_snow_config_mod, only :                                            &
-!!! RETHINK_THIS: Add new options
                               i_basal_melting_opt_none,                        &
                               i_basal_melting_opt_instant,                     &
                               i_grain_growth_opt_marshall,                     &
@@ -360,7 +359,7 @@ contains
     end select
     i_snow_cond_parm       = 1
     l_et_metamorph         = .true.
-    l_rhofresh_extern      = l_rhofresh_extern_in
+    l_rhofresh_extern      = config%jules_snow%l_rhofresh_extern()
     l_snow_infilt          = .true.
     l_snow_nocan_hc        = .true.
     l_snowdep_surf         = .true.
@@ -369,7 +368,7 @@ contains
     rho_snow_et_crit       = 150.0_r_um
     rho_snow_fresh         = real(config%jules_snow%rho_snow_fresh(), r_um)
     snow_hcon              = 0.1495_r_um
-    wind_compaction_sqrt   = RETHINK_THIS
+    wind_compaction_sqrt   = real(config%jules_snow%wind_compaction_sqrt(), r_um)
     unload_rate_u(1:npft)  = real(config%jules_snow%unload_rate_u(), r_um)
 
     ! Set the LFRic dimension

@@ -281,8 +281,6 @@ contains
     use dust_parameters_mod,      only: ndiv
     use jules_hydrology_mod,      only: l_hydrology
     use jules_surface_types_mod,  only: npft, ntype
-    ! Eventually remove this duplicate.
-    use jules_snow_mod,           only: nsmax
     use jules_soil_mod,           only: ns_deep, l_bedrock
     use jules_soil_biogeochem_mod, only: dim_ch4layer, soil_bgc_model,         &
                                          soil_model_ecosse, l_layeredc
