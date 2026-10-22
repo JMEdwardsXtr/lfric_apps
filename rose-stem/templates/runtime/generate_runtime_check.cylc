@@ -23,7 +23,7 @@
     {# current is in rose-stem/site/SITE/kgos, #}
     {# new is in the task output dir #}
     {# Can overwrite this per task, eg for nrun_vs_crun comparisons #}
-    {% set current_kgo = "$SOURCE_ROOT/apps/rose-stem/site/"~
+    {% set current_kgo = "$SOURCE_ROOT/lfric_apps/rose-stem/site/"~
                           SITE~"/kgos/"~
                           task_ns.application~"/"~
                           task_ns.platform~
@@ -109,6 +109,19 @@
             PERT_OFF_TASK = {{perturb_off_output}}
             PLOT_DIR      = {{task_output_dir}}/plots
             PERT_CONFIG   = {{task_values["pert_plot_str"]}}
+        [[[directives]]]
+    {{ set_task_resources(task_values["tech-tests_cpus"], task_values["tech-tests_memory"]) }}
+
+{% elif task.startswith("metadata_test") %}
+    {% for family in task_values["plot_families"] %}
+        {% set inherit.str = inherit.str~","~family|upper %}
+    {% endfor %}
+
+    [[{{task}}]]
+        inherit = {{inherit.str|upper}}
+        script = rose task-run --app-key=validate_output_file_metadata
+        [[[environment]]]
+            INPUT_RESULTS_DIR = {{task_output_dir}}/results
         [[[directives]]]
     {{ set_task_resources(task_values["tech-tests_cpus"], task_values["tech-tests_memory"]) }}
 
