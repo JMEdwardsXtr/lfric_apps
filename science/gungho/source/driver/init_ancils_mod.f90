@@ -256,7 +256,7 @@ contains
                   mesh, twod_mesh, twod=.true., ndata=n_sea_ice_tile,         &
                   time_axis=sea_ice_time_axis)
       end if
-      call setup_ancil_field("sea_ice_fraction", depository, ancil_fields, &
+      call setup_ancil_field("sea_ice_area_fraction", depository, ancil_fields, &
                 mesh, twod_mesh, twod=.true., ndata=n_sea_ice_tile,        &
                 time_axis=sea_ice_time_axis)
       call ancil_times_list%insert_item(sea_ice_time_axis)

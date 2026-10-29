@@ -74,7 +74,7 @@ contains
 
       ! Get the data from ancil_fields (if applicable for your model)
       if (.not. l_couple_sea_ice) then
-        call ancil_fields%get_field('sea_ice_fraction', sea_ice_fraction)
+        call ancil_fields%get_field('sea_ice_area_fraction', sea_ice_fraction)
       end if
       if (.not. l_couple_ocean) then
         call ancil_fields%get_field('tstar_sea', tstar_sea)

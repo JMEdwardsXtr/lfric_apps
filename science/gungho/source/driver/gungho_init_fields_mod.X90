@@ -1043,8 +1043,8 @@ subroutine create_model_data( modeldb,           &
                 call ancil_fields%remove_field("tstar_sea")
                 call depository%remove_field("tstar_sea")
               end if
-              call ancil_fields%remove_field("sea_ice_fraction")
-              call depository%remove_field("sea_ice_fraction")
+              call ancil_fields%remove_field("sea_area_ice_fraction")
+              call depository%remove_field("sea_area_ice_fraction")
             end if
             ! Time axes are no longer needed
             call model_axes%ancil_times_list%clear()

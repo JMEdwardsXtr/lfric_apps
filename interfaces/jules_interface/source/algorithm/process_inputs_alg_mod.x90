@@ -166,9 +166,9 @@ contains
       ! For atmosphere only models or coupled models with inland lakes it is
       ! provided by an ancillary file
       if (sea_ice_source == sea_ice_source_start_dump) then
-        call fd_fields%get_field('sea_ice_fraction', sea_ice_fraction)
+        call fd_fields%get_field('sea_ice_area_fraction', sea_ice_fraction)
       else
-        call ancil_fields%get_field('sea_ice_fraction', sea_ice_fraction)
+        call ancil_fields%get_field('sea_ice_area_fraction', sea_ice_fraction)
       endif
       call surface_fields%get_field('sea_ice_thickness', sea_ice_thickness)
       call surface_fields%get_field('tile_fraction', tile_fraction)

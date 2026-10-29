@@ -63,7 +63,7 @@ contains
     call sea_ice_thickness%copy_field_properties(sea_ice_fraction)
     call invoke(multi_extract_kernel_type(sea_ice_fraction, tile_fraction,     &
                                             first_sea_ice_tile, n_sea_ice_tile))
-    call sea_ice_fraction%write_field('seaice__sea_ice_fraction')
+    call sea_ice_fraction%write_field('seaice__sea_ice_area_fraction')
 
     if ( LPROF ) call stop_timing( id, 'diags.jules_seaice' )
 
