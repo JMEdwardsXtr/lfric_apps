@@ -131,8 +131,8 @@ call map_field_name(stashcode_tstar, 'tstar')                        ! stash 24
 call map_field_name(stashcode_bl_depth, 'zh')                        ! stash 25
 call map_field_name(stashcode_z0, 'z0msea')                          ! stash 26
 call map_field_name(stashcode_lsm, 'land_mask')                      ! stash 30
-call map_field_name(stashcode_icefrac, 'icefrac')                    ! stash 31
-call map_field_name(stashcode_icethick, 'icethick')                  ! stash 32
+call map_field_name(stashcode_icefrac, 'sea_ice_area_fraction')      ! stash 31
+call map_field_name(stashcode_icethick, 'sea_ice_thickness')         ! stash 32
 call map_field_name(stashcode_orog, 'surface_altitude')              ! stash 33
 call map_field_name(stashcode_sea_ice_temp, 'sea_ice_temperature')   ! stash 49
 call map_field_name(stashcode_ozone, 'ozone')                        ! stash 60
