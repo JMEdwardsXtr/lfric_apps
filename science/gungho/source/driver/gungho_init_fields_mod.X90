@@ -65,6 +65,8 @@ module gungho_init_fields_mod
                                                  zero_w2v_wind,               &
                                                  sst_source,                  &
                                                  sst_source_start_dump,       &
+                                                 sea_ice_source,              &
+                                                 sea_ice_source_start_dump,   &
                                                  snow_source,                 &
                                                  snow_source_surf
   use io_config_mod,                      only : checkpoint_read,  &
@@ -1043,8 +1045,10 @@ subroutine create_model_data( modeldb,           &
                 call ancil_fields%remove_field("tstar_sea")
                 call depository%remove_field("tstar_sea")
               end if
-              call ancil_fields%remove_field("sea_area_ice_fraction")
-              call depository%remove_field("sea_area_ice_fraction")
+              if (sea_ice_source /= sea_ice_source_start_dump) then
+                call ancil_fields%remove_field("sea_ice_area_fraction")
+                call depository%remove_field("sea_ice_area_fraction")
+              end if
             end if
             ! Time axes are no longer needed
             call model_axes%ancil_times_list%clear()
