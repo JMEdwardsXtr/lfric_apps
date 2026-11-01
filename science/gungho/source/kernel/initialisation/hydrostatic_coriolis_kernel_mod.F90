@@ -137,7 +137,7 @@ subroutine hydrostatic_coriolis_code( nlayers,       &
     theta_moist = moist_dyn_gas( map_wt(1) + k ) * theta( map_wt(1) + k ) /   &
                   moist_dyn_tot( map_wt(1) + k )
     exner( map_w3(1) + k - 1 ) = exner( map_w3 (1) + k )         &
-       -  ( coriolis_term( map_wt(1) + k - 1 ) * dz              &
+       -  ( 0.0 * coriolis_term( map_wt(1) + k - 1 ) * dz              &
        +  ( phi( map_w3(1) + k - 1 ) - phi( map_w3(1) + k  ) ) ) &
        / ( cp * theta_moist )
 
@@ -149,7 +149,7 @@ subroutine hydrostatic_coriolis_code( nlayers,       &
     theta_moist = moist_dyn_gas( map_wt(1) + k + 1 ) * theta( map_wt(1) + k + 1) /   &
                   moist_dyn_tot( map_wt(1) + k + 1)
     exner( map_w3(1) + k + 1 ) = exner( map_w3 (1) + k )        &
-       +  ( coriolis_term( map_wt(1) + k ) * dz                 &
+       +  ( 0.0 * coriolis_term( map_wt(1) + k ) * dz                 &
        +  ( phi( map_w3(1) + k ) - phi( map_w3(1) + k + 1 ) ) ) &
        / ( cp * theta_moist )
 
