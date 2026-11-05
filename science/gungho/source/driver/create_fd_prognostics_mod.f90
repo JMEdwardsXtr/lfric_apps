@@ -261,9 +261,7 @@ contains
                              fd_field_collection, mesh, twod_mesh, &
                              twod=.true., ndata=n_sea_ice_tile)
 
-      ! For coupled models get the sea ice fraction and thickness from the
-      ! dump
-      if (l_couple_sea_ice .and. (sea_ice_source == sea_ice_source_start_dump)) then
+      if (sea_ice_source == sea_ice_source_start_dump) then
          call setup_ancil_field("sea_ice_area_fraction", depository, &
                              fd_field_collection, mesh, twod_mesh, &
                              twod=.true., ndata=n_sea_ice_tile)
